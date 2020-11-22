@@ -7,6 +7,7 @@ Creates dogs, retrieves cats and dogs. Displays a different way to approach desi
 - MongoDB
 - IntegrationTests
 - NUnit
+- MemoryCache
 
 ## Running
 
