@@ -69,8 +69,8 @@ namespace AnimalAPI.Tests
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             var body = await response.Content.ReadAsStringAsync();
-            var deserializedResponse = JsonConvert.DeserializeObject<List<Cat>>(body).OrderBy(x => x.Id).ToList();
-            deserializedResponse.Should().BeEquivalentTo(catsToCreate.OrderBy(x => x.Id));
+            var deserializedResponseCount = JsonConvert.DeserializeObject<List<ViewCatDto>>(body).Count();
+            deserializedResponseCount.Should().Be(catsToCreate.Count);
         }
 
         [Test]
@@ -98,8 +98,8 @@ namespace AnimalAPI.Tests
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             var body = await response.Content.ReadAsStringAsync();
-            var deserializedResponse = JsonConvert.DeserializeObject<List<Dog>>(body).OrderBy(x => x.Id).ToList();
-            deserializedResponse.Should().BeEquivalentTo(dogsToCreate.OrderBy(x => x.Id));
+            var deserializedResponse = JsonConvert.DeserializeObject<List<ViewDogDto>>(body).Count();
+            deserializedResponse.Should().Be(dogsToCreate.Count());
         }
 
         [Test]
@@ -122,13 +122,15 @@ namespace AnimalAPI.Tests
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             var body = await response.Content.ReadAsStringAsync();
-            var deserializedResponse = JsonConvert.DeserializeObject<Dog>(body);
+            var deserializedResponse = JsonConvert.DeserializeObject<ViewDogDto>(body);
             deserializedResponse.Name.Should().Be(dog.Name);
             deserializedResponse.PottyTrained.Should().Be(dog.PottyTrained);
             deserializedResponse.Barks.Should().Be(dog.Barks);
             deserializedResponse.Id.Should().NotBeNullOrWhiteSpace();
 
-            response.Headers.Location.Should().Be($"/dogs/{deserializedResponse.Id}");
+            deserializedResponse.Meta.Self.Should().Be($"http://localhost/dogs/{deserializedResponse.Id}");
+
+            response.Headers.Location.Should().Be($"http://localhost/dogs/{deserializedResponse.Id}");
         }
 
         [Test]
@@ -150,16 +152,17 @@ namespace AnimalAPI.Tests
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             var body = await response.Content.ReadAsStringAsync();
-            var deserializedResponse = JsonConvert.DeserializeObject<Cat>(body);
+            var deserializedResponse = JsonConvert.DeserializeObject<ViewCatDto>(body);
             deserializedResponse.Name.Should().Be(toInsert.Name);
             deserializedResponse.Hisses.Should().Be(toInsert.Hisses);
             deserializedResponse.Id.Should().NotBeNullOrWhiteSpace();
+            deserializedResponse.Meta.Self.Should().Be($"http://localhost/cats/{deserializedResponse.Id}");
 
-            response.Headers.Location.Should().Be($"/cats/{deserializedResponse.Id}");
+            response.Headers.Location.Should().Be($"http://localhost/cats/{deserializedResponse.Id}");
         }
 
         [Test]
-        public async Task GetSinglCat()
+        public async Task GetSingleCat()
         {
             var toInsert = new CreateCatDto
             {
@@ -178,10 +181,11 @@ namespace AnimalAPI.Tests
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             var body = await response.Content.ReadAsStringAsync();
-            var deserializedResponse = JsonConvert.DeserializeObject<Cat>(body);
+            var deserializedResponse = JsonConvert.DeserializeObject<ViewCatDto>(body);
             deserializedResponse.Name.Should().Be(toInsert.Name);
             deserializedResponse.Hisses.Should().Be(toInsert.Hisses);
             deserializedResponse.Id.Should().NotBeNullOrWhiteSpace();
+            deserializedResponse.Meta.Self.Should().Be($"http://localhost/cats/{deserializedResponse.Id}");
         }
 
         [Test]
@@ -205,11 +209,12 @@ namespace AnimalAPI.Tests
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
             var body = await response.Content.ReadAsStringAsync();
-            var deserializedResponse = JsonConvert.DeserializeObject<Dog>(body);
+            var deserializedResponse = JsonConvert.DeserializeObject<ViewDogDto>(body);
             deserializedResponse.Name.Should().Be(insertDog.Name);
             deserializedResponse.PottyTrained.Should().Be(insertDog.PottyTrained);
             deserializedResponse.Barks.Should().Be(insertDog.Barks);
             deserializedResponse.Id.Should().NotBeNullOrWhiteSpace();
+            deserializedResponse.Meta.Self.Should().Be($"http://localhost/dogs/{deserializedResponse.Id}");
         }
 
         [Test]
