@@ -6,13 +6,6 @@ using MongoDB.Driver;
 
 namespace AnimalAPI.Services
 {
-    public interface IAnimalService
-    {
-        Task<List<Dog>> GetAllDogsAsync();
-        Task<List<Cat>> GetAllCatsAsync();
-        Task PersistDogAsync(Dog dog);
-        Task<Dog> GetDogById(string id);
-    }
 
     public class AnimalService : IAnimalService
     {
@@ -29,24 +22,28 @@ namespace AnimalAPI.Services
 
         public async Task<List<Dog>> GetAllDogsAsync()
         {
+            // you always need a filter when using mongodb
             var findCursor = await Animals.OfType<Dog>().FindAsync(x => true);
             return await findCursor.ToListAsync();
         }
 
         public async Task<List<Cat>> GetAllCatsAsync()
         {
+            // you always need a filter when using mongodb
             var findCursor = await Animals.OfType<Cat>().FindAsync(x => true);
             return await findCursor.ToListAsync();
         }
 
-        public async Task PersistDogAsync(Dog dog)
+        public async Task InsertDogAsync(Dog dog)
         {
+            // as soon as you insert an entity you automatically get an id filled in.
             await Animals.InsertOneAsync(dog);
         }
 
-        public async Task<Dog> GetDogById(string id)
+        public async Task InsertCatAsync(Cat cat)
         {
-            return (await Animals.OfType<Dog>().FindAsync(x => x.Id == id)).FirstOrDefault();
+            // as soon as you insert an entity you automatically get an id filled in.
+            await Animals.InsertOneAsync(cat);
         }
     }
 }

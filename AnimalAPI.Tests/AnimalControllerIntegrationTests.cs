@@ -105,7 +105,7 @@ namespace AnimalAPI.Tests
         [Test]
         public async Task PersistDog()
         {
-            var dog = new Dog()
+            var dog = new CreateDogDto
             {
                 Barks = true,
                 Name = "Barbkbark",
@@ -132,9 +132,36 @@ namespace AnimalAPI.Tests
         }
 
         [Test]
+        public async Task PersistCat()
+        {
+            var toInsert = new CreateCatDto
+            {
+                Hisses = true,
+                Name = "Barbkbark"
+            };
+
+            var buffer = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(toInsert));
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.PostAsync("cats", byteContent);
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            var body = await response.Content.ReadAsStringAsync();
+            var deserializedResponse = JsonConvert.DeserializeObject<Cat>(body);
+            deserializedResponse.Name.Should().Be(toInsert.Name);
+            deserializedResponse.Hisses.Should().Be(toInsert.Hisses);
+            deserializedResponse.Id.Should().NotBeNullOrWhiteSpace();
+
+            response.Headers.Location.Should().Be($"/cats/{deserializedResponse.Id}");
+        }
+
+        [Test]
         public async Task GetSingleDog()
         {
-            var insertDog = new Dog()
+            var insertDog = new CreateDogDto
             {
                 Barks = true,
                 Name = "Barbkbark",
@@ -168,6 +195,36 @@ namespace AnimalAPI.Tests
             var response = await client.GetAsync($"/dogs/blabla");
             // Assert
             response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public async Task PersistDog_EmptyNameThrowsError()
+        {
+            var toInsert = new CreateDogDto();
+
+            var buffer = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(toInsert));
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            var client = _factory.CreateClient();
+
+            // Act
+            var responsePost = await client.PostAsync("dogs", byteContent);
+            responsePost.StatusCode.Equals(400);
+        }
+
+        [Test]
+        public async Task PersistCat_EmptyNameThrowsError()
+        {
+            var toInsert = new CreateCatDto();
+
+            var buffer = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(toInsert));
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            var client = _factory.CreateClient();
+
+            // Act
+            var responsePost = await client.PostAsync("cats", byteContent);
+            responsePost.StatusCode.Equals(400);
         }
     }
 }

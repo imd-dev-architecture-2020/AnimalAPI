@@ -26,11 +26,7 @@ namespace AnimalAPI.Controllers
         [HttpGet("/cats")]
         public async Task<IActionResult> GetCats()
         {
-            var cats = await _memoryCache.GetOrCreateAsync(nameof(GetCats), entry =>
-            {
-                return _animalService.GetAllCatsAsync();
-            });
-            return Ok(cats);
+            return Ok(await GetAllCats());
         }
 
         [HttpGet("/dogs")]
@@ -52,21 +48,43 @@ namespace AnimalAPI.Controllers
         }
 
         [HttpPost("/dogs")]
-        public async Task<IActionResult> CreateDog([FromBody] Dog dog)
+        public async Task<IActionResult> CreateDog([FromBody] CreateDogDto dogDto)
         {
-            await _animalService.PersistDogAsync(dog);
-            _memoryCache.Remove(nameof(GetDogs));
+            var dog = new Dog
+            {
+                Barks = dogDto.Barks,
+                Name = dogDto.Name,
+                PottyTrained = dogDto.PottyTrained
+            };
+            await _animalService.InsertDogAsync(dog);
+            _memoryCache.Remove(CacheKeys.AllDogs);
             string uri = $"/dogs/{dog.Id}";
             return base.Created(uri, dog);
         }
 
-        private async Task<List<Dog>> GetAllDogs()
+        [HttpPost("/cats")]
+        public async Task<IActionResult> CreateCats([FromBody] CreateCatDto catDto)
         {
-            return await _memoryCache.GetOrCreateAsync(nameof(GetDogs), entry =>
+            var cat = new Cat
+            {
+                Hisses = catDto.Hisses,
+                Name = catDto.Name
+            };
+            await _animalService.InsertCatAsync(cat);
+            _memoryCache.Remove(CacheKeys.AllCats);
+            string uri = $"/cats/{cat.Id}";
+            return base.Created(uri, cat);
+        }
+
+        private Task<List<Dog>> GetAllDogs() => _memoryCache.GetOrCreateAsync(CacheKeys.AllDogs, entry =>
             {
                 return _animalService.GetAllDogsAsync();
             });
-        }
 
+
+        private Task<List<Cat>> GetAllCats() => _memoryCache.GetOrCreateAsync(CacheKeys.AllCats, entry =>
+        {
+            return _animalService.GetAllCatsAsync();
+        });
     }
 }
