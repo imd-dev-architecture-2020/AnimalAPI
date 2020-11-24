@@ -137,7 +137,7 @@ namespace AnimalAPI.Tests
             var toInsert = new CreateCatDto
             {
                 Hisses = true,
-                Name = "Barbkbark"
+                Name = "miauwmiauw"
             };
 
             var buffer = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(toInsert));
@@ -156,6 +156,32 @@ namespace AnimalAPI.Tests
             deserializedResponse.Id.Should().NotBeNullOrWhiteSpace();
 
             response.Headers.Location.Should().Be($"/cats/{deserializedResponse.Id}");
+        }
+
+        [Test]
+        public async Task GetSinglCat()
+        {
+            var toInsert = new CreateCatDto
+            {
+                Hisses = true,
+                Name = "miauwmiauw"
+            };
+
+            var buffer = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(toInsert));
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            var client = _factory.CreateClient();
+
+            // Act
+            var responsePost = await client.PostAsync("cats", byteContent);
+            var response = await client.GetAsync(responsePost.Headers.Location);
+            // Assert
+            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            var body = await response.Content.ReadAsStringAsync();
+            var deserializedResponse = JsonConvert.DeserializeObject<Cat>(body);
+            deserializedResponse.Name.Should().Be(toInsert.Name);
+            deserializedResponse.Hisses.Should().Be(toInsert.Hisses);
+            deserializedResponse.Id.Should().NotBeNullOrWhiteSpace();
         }
 
         [Test]
