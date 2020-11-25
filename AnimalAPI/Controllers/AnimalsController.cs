@@ -29,13 +29,13 @@ namespace AnimalAPI.Controllers
         /// Get all cats
         ///</summary>
         [HttpGet("/cats", Name = nameof(GetCats))]
-        public async Task<IActionResult> GetCats() => Ok(await GetAllCatsAsViewDto());
+        public async Task<IActionResult> GetCats() => Ok(await GetAllCatsFromCacheAsync());
 
         ///<summary>
         /// Get all dogs
         ///</summary>
         [HttpGet("/dogs", Name = nameof(GetDogs))]
-        public async Task<IActionResult> GetDogs() => Ok(await GetAllDogsAsViewDto());
+        public async Task<IActionResult> GetDogs() => Ok(await GetAllDogsFromCacheAsync());
 
         ///<summary>
         /// Get a single dog by id.
@@ -44,7 +44,7 @@ namespace AnimalAPI.Controllers
         [HttpGet("/dogs/{id}", Name = nameof(GetDog))]
         public async Task<IActionResult> GetDog(string id)
         {
-            var dogs = await GetAllDogsAsViewDto();
+            var dogs = await GetAllDogsFromCacheAsync();
             var dog = dogs.FirstOrDefault(x => x.Id == id);
             if (dog == null)
             {
@@ -60,7 +60,7 @@ namespace AnimalAPI.Controllers
         [HttpGet("/cats/{id}", Name = nameof(GetCat))]
         public async Task<IActionResult> GetCat(string id)
         {
-            var cats = await GetAllCatsAsViewDto();
+            var cats = await GetAllCatsFromCacheAsync();
             var cat = cats.FirstOrDefault(x => x.Id == id);
             if (cat == null)
             {
@@ -95,8 +95,8 @@ namespace AnimalAPI.Controllers
             };
             await _animalService.InsertDogAsync(dog);
             _memoryCache.Remove(CacheKeys.AllDogs);
-            string uri = $"/dogs/{dog.Id}";
-            var returningDog = (await GetAllDogsAsViewDto()).FirstOrDefault(x => x.Id == dog.Id);
+            // Debatable if you want to do a fetch from the cache or a fetch directly from the db. This all depends on your configuration
+            var returningDog = (await GetAllDogsFromCacheAsync()).FirstOrDefault(x => x.Id == dog.Id);
             return base.CreatedAtRoute(nameof(GetDog), new { id = dog.Id }, returningDog);
         }
 
@@ -124,16 +124,12 @@ namespace AnimalAPI.Controllers
             };
             await _animalService.InsertCatAsync(cat);
             _memoryCache.Remove(CacheKeys.AllCats);
-            string uri = $"/cats/{cat.Id}";
-            var returningCat = (await GetAllCatsAsViewDto()).FirstOrDefault(x => x.Id == cat.Id);
+            var returningCat = (await GetAllCatsFromCacheAsync()).FirstOrDefault(x => x.Id == cat.Id);
             return base.CreatedAtRoute(nameof(GetCat), new { id = cat.Id }, returningCat);
         }
 
-        private Task<List<ViewDogDto>> GetAllDogsAsync =>
-            _memoryCache.GetOrCreateAsync(CacheKeys.AllDogs, entry =>
-            {
-                return GetAllDogsAsViewDto();
-            });
+        private Task<List<ViewDogDto>> GetAllDogsFromCacheAsync() =>
+            _memoryCache.GetOrCreateAsync(CacheKeys.AllDogs, entry => GetAllDogsAsViewDto());
 
         private async Task<List<ViewDogDto>> GetAllDogsAsViewDto()
         {
@@ -141,13 +137,8 @@ namespace AnimalAPI.Controllers
             return dogs.Select(x => new ViewDogDto(x, new AnimalLinks(Url.Link(nameof(GetDog), new { id = x.Id })))).ToList();
         }
 
-        private Task<List<ViewCatDto>> GetAllCats()
-        {
-            return _memoryCache.GetOrCreateAsync(CacheKeys.AllCats, entry =>
-            {
-                return GetAllCatsAsViewDto();
-            });
-        }
+        private Task<List<ViewCatDto>> GetAllCatsFromCacheAsync() => 
+            _memoryCache.GetOrCreateAsync(CacheKeys.AllCats, entry => GetAllCatsAsViewDto());
 
         private async Task<List<ViewCatDto>> GetAllCatsAsViewDto()
         {

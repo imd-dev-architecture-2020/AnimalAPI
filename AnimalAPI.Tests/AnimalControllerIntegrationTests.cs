@@ -9,7 +9,6 @@ using AnimalAPI.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -229,6 +228,17 @@ namespace AnimalAPI.Tests
         }
 
         [Test]
+        public async Task GetSingleCat_IdDoesNotExist()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            // Act
+            var response = await client.GetAsync($"/cats/blabla");
+            // Assert
+            response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
         public async Task PersistDog_EmptyNameThrowsError()
         {
             var toInsert = new CreateDogDto();
@@ -240,7 +250,7 @@ namespace AnimalAPI.Tests
 
             // Act
             var responsePost = await client.PostAsync("dogs", byteContent);
-            responsePost.StatusCode.Equals(400);
+            responsePost.StatusCode.Should().Be(404);
         }
 
         [Test]
@@ -255,7 +265,7 @@ namespace AnimalAPI.Tests
 
             // Act
             var responsePost = await client.PostAsync("cats", byteContent);
-            responsePost.StatusCode.Equals(400);
+            responsePost.StatusCode.Should().Be(404);
         }
     }
 }
