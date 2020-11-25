@@ -8,13 +8,15 @@ Creates dogs, retrieves cats and dogs. Displays a different way to approach desi
 - IntegrationTests
 - NUnit
 - MemoryCache
+- NBuilder
+- ReDoc
 
 ## Running
 
 - `docker-compose up` (this spins up a mongodb database)
 - `dotnet test`
 
-You need a running mongodb database for the tests; I've only written integration tests with actual database integration.
+You need a running mongodb database for the tests; I've only written integration tests with actual database integration. You also want to adjust appsettings.test.json.
 
 ## Accessing the application
 

@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAPI", "AnimalAPI\AnimalAPI.csproj", "{48FAAECE-B36F-4BEC-A4EF-548F26DD948B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalAPI", "AnimalAPI\AnimalAPI.csproj", "{48FAAECE-B36F-4BEC-A4EF-548F26DD948B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalAPI.Tests", "AnimalAPI.Tests\AnimalAPI.Tests.csproj", "{30CC7800-BF3E-4C92-BAB8-6B92568D40C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalAPI.Tests", "AnimalAPI.Tests\AnimalAPI.Tests.csproj", "{30CC7800-BF3E-4C92-BAB8-6B92568D40C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{F8EB2988-752D-4F7E-84E9-377AA66A70E3}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +20,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{48FAAECE-B36F-4BEC-A4EF-548F26DD948B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +46,11 @@ Global
 		{30CC7800-BF3E-4C92-BAB8-6B92568D40C2}.Release|x64.Build.0 = Release|Any CPU
 		{30CC7800-BF3E-4C92-BAB8-6B92568D40C2}.Release|x86.ActiveCfg = Release|Any CPU
 		{30CC7800-BF3E-4C92-BAB8-6B92568D40C2}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5FE54CAE-B2FB-4E79-B525-0FCF5B126EB1}
 	EndGlobalSection
 EndGlobal
